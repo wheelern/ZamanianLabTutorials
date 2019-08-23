@@ -10,8 +10,8 @@ runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = "~/Box/ZamanianLab/LabMembers/Nic/R_workshop/")
+knitr::opts_chunk$set(echo = FALSE)
+
 library(learnr)
 library(tidyr)
 library(dplyr)
@@ -40,19 +40,21 @@ library(readr)
 
 For the purposes of this tutorial, we will be loading packages as needed, and I will point out what the package is often used for and what the new function that we're using does. When you begin writing your own R scripts, it's good practice to load all of the packages you'll need at the top of the document, before you start any analysis. If you get halfway through the analysis and realize you need another package, add it to the top.
 
-Ok, now that that's over with, we'll actually import the data. Your data will **almost** always be in the form of a CSV file - a text file with comma-separated values. To import the data, we'll use a function from the `tidyverse` package called `read_csv()` which will read all the data from your CSV file and store it in an objecte called a `data.frame`. Actually, it will load it into a special type of object called a `tibble`, but that's more detail than we need right now. A `data.frame` is basically a set of columns (aka variables) sorted side-by-side. Each column **must** have the same number of rows (aka observations) and **must** contain the same data type (for example, integers, numbers, characters, etc.). Load some of my example data with the code below (`glimpse()` will tell you a little bit about the `tibble` that you just created). 
+Ok, now that that's over with, we'll actually import the data. Your data will **almost** always be in the form of a CSV file - a text file with comma-separated values. To import the data, we'll use a function from the `readr` package called `read_csv()` which will read all the data from your CSV file and store it in an objecte called a `data.frame`. Actually, it will load it into a special type of object called a `tibble`, but that's more detail than we need right now. A `data.frame` is basically a set of columns (aka variables) sorted side-by-side. Each column **must** have the same number of rows (aka observations) and **must** contain the same data type (for example, integers, numbers, characters, etc.). Load some of my example data with the code below (`glimpse()` will tell you a little bit about the `tibble` that you just created). 
 
-```{r import, exercise=TRUE}
-raw_data <- read_csv("1_rawdata/ce_chemotaxis.csv") %>%
+```{r import, exercise=TRUE, message=FALSE}
+raw_data <- read_csv("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/1_rawdata/ce_chemotaxis.csv") %>%
   glimpse()
 ```
 
-Notice that the `tibble` is assigned a name, `raw_data` using the assignment operator `<-`. Notice also the `%>%` operator. This is called a pipe, and it's something that is specific to the `tidyverse` package. It allows us to sequentially run manipulations on the `tibble` without always assigning it a new name. In this case, it allows us use to run the `glimpse` function, which shows us a little bit about our `tibble`. Normally, you would have to run the command like this: `glimpse(raw_data)`
+In the code block we just ran, notice that the `tibble` is assigned a name, `raw_data` using the assignment operator `<-`. Notice also the `%>%` operator. This is called a pipe, and it's something that is specific to the `tidyverse`, of which `readr`, `dplyr`, `tidyr`, and `ggplot2` are a part. The pipe allows us to sequentially run manipulations on the `tibble` without always assigning it a new name. In this case, it allows us use to run the `glimpse` function, which shows us a little bit about our `tibble`. Without the pipe, you would have to run the command like this: `glimpse(raw_data)`.
 
-Use the code block below to import your own data by replacing the `...` with the path and file name of your choice. If you've done it correctly, the `glimpse()` command will show you a bit of your imported data. If not, the command will print an error, something like `'your data' does not exist in current working directory`.
+The `glimpse()` command showed us an easily readable summary of the `tibble` that we just created. It tells us that we have 156 observations (rows) and 9 variables (columns). These columns are listed with their name (Date, Strain, etc.), type (dbl, chr, etc.), and a few observations. You won't often use `glimpse()` when doing interactive analyses, but it's useful for the purposes of this tutorial.
 
-```{r test.import, exercise=TRUE}
-test_data <- read_csv("1_rawdata/...") %>%
+Use the code block below to import your own data by replacing the `...` with the path and file name of your choice. (Note: you will have to copy your test data to my lab folder at `~/Box/ZamanianLab/LabMembers/Nic/R_workshop/1_rawdata`.) If you've done it correctly, the `glimpse()` command will show you a bit of your imported data. If not, the command will print an error, something like `'your data' does not exist in current working directory`.
+
+```{r test_import, exercise=TRUE}
+test_data <- read_csv("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/1_rawdata/...") %>%
   glimpse()
 ```
 
@@ -60,85 +62,99 @@ We now have our data imported to the prefered `tidyverse` object, the `tibble`, 
 
 ### Data Tidying
 
-There are two ways to structure data - long and wide. Wide data is how most people store data, with observations and variables spread across multiple columns. Wide data is easier to enter manually and often easier for a human to visualize, which is why it persists. However, data analysis in R is better done with long data - where each column is a variable with the same data type and each row is a single observation. I'll demonstrate with the dataset that we imported above, which I generated by running *C. elegans* chemotaxis experiments.
+There are two ways to structure data - long and wide. Wide data is how most people store data, with observations and variables spread across multiple columns. Wide data is easier to enter manually and often easier for a human to visualize. However, data analysis in R is better done with long data - where each column is a variable with the same data type and each row is a single observation. For instance, check out the structure of the dataset that we imported above, which I generated by running *C. elegans* chemotaxis experiments.
 
-```{r pew, exercise=TRUE}
-raw_data <- read_csv("1_rawdata/ce_chemotaxis.csv") %>%
-  glimpse()
+```{r message=FALSE}
+read_csv("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/1_rawdata/ce_chemotaxis.csv")
 ```
 
-You'll see that `raw_data` is organized such that each observation (row) contains all the data measured from a single chemotaxis plate, and each variable (column) contains either some metadata about the experiment or a recorded observation. Because each row does contains 4 observations, this data is in a wide format and we will need to convert it to long format. But before we do that, we need to first perform an additional calculation.
+You'll see that `raw_data` is organized such that each observation (row) contains all the data measured from a single chemotaxis plate, and each variable (column) contains either some metadata about the experiment or a recorded value from that plate. Because each row contains 4 observations, this data is in a wide format and we will need to convert it to long format. But before we do that, we need to first perform an additional calculation.
 
 For this data, we're really interested in a value called the Chemotaxis Index, or CI. The CI is calculated by taking the number of worms found at the cue minus the number of worms found at the control, divided by the total number of worms. While downstream analysis and visualization is best performed on long data, this calculation is most easily performed with the wide data format. The code below will add a new variable, calculate the CI, and add each CI as a new observation.
 
-```{r calculate-setup, echo=FALSE}
-raw_data <- read_csv("1_rawdata/ce_chemotaxis.csv")
+```{r calculate-setup, echo=FALSE, message=FALSE}
+raw_data <- read_csv("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/1_rawdata/ce_chemotaxis.csv")
 ```
 
-```{r calculate, exercise=TRUE}
-library(magrittr)
-
-raw_data %<>% mutate(CI = (Cue_N - Control_N) / Total) %>%
+```{r calculate, exercise=TRUE, message=FALSE}
+raw_data <- mutate(raw_data, CI = (Cue_N - Control_N) / Total) %>%
   glimpse()
 ```
 
-You'll notice a few new things in this code block. First is the new operator `%<>%`, known as the compound assignment operator. This operator was imported via the `magrittr` package, and it's a convenient shorthand for what could also be coded as `raw_data <- raw_data %>% ...`. Second, you'll notice the new function `mutate()`, which is a part of one of the most essential packages of the `tidyverse`, `dplyr`. `dplyr` contains a host of functions that will allow you to "ply" your data (get it? It's a data plier). You can find a handy `dplyr` cheatsheet [here](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf). `mutate()` creates a new column/variable, and it uses observations from other variables (and calculations on those observations) to construct the new column. In this case, we're telling `mutate()` to create a new column named `CI` and to create observations in this column by taking the difference of `Cue_N` and `Control_N` and dividing it by `Total`. `mutate()` will perform this calculation in a vectorized manner, which for simplicity's sake means it will perform it row-by-row. Recall that one of the requirements of the `data.frame` or `tibble` is that each variable must have the same number of observations. This is because of the way that vectorized functions work in the `tidyverse`. If `Cue_N` had more observations than `Control_N`, what would `mutate()` do for the rows with missing data? The function would fail, so keeping your data in a `tibble` will ensure all the downstream vectorized functions will work as expected.
+You'll notice a few new things in this code block. First, you'll notice the new function `mutate()`, which is a part of one of the most essential packages of the `tidyverse`, `dplyr`. `dplyr` contains a host of functions that will allow you to "ply" your data (get it? It's a data plier). You can find a handy `dplyr` cheatsheet [here](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf). `mutate()` creates a new column/variable, and it uses values from other variables (and calculations on those values) to construct the new column. In this case, we're telling `mutate()` to create a new column named `CI` and to fill this column with values by taking the difference of `Cue_N` and `Control_N` and dividing it by `Total`. `mutate()` will perform this calculation in a vectorized manner, which for simplicity's sake means it will perform the operation at once on the entire vector instead of row-by-row. Recall that one of the requirements of the `data.frame` or `tibble` is that each variable must have the same number of observations. This is because of the way that vectorized functions work. If `Cue_N` had more observations than `Control_N`, what would `mutate()` do for the observations with missing data? The function would fail, so keeping your data in a `tibble` will ensure all the downstream vectorized functions will work as expected.
 
-Ok, we now have all the data that we'll need, but it still is in wide format (each row has multiple observations). We need to get it into long format (each row has a single observation) for all the downstream analyses and visualizations. To do that, we use a new `tidyr` function called `pivot_longer()` (Note: depending on when you're going through this tutorial, you may not have the most recent development version of `tidyr`, if the code below results in `could not find function "pivot_longer"`, run `devtools::install_github("tidyverse/tidyr")` and follow the prompts. When it's finished installing, try reloading `tidyverse`, but you may have to close and restart this tutorial). See below:
+Ok, we now have all the data that we'll need, but it still is in wide format (each row has multiple observations). We need to get it into long format (each row has a single observation) for all the downstream analyses and visualizations. To do that, we use a new `tidyr` function called `pivot_longer()`. See below:
 
-```{r long-setup, echo=FALSE}
-raw_data <- read_csv("1_rawdata/ce_chemotaxis.csv") %>%
+```{r long-setup, echo=FALSE, message=FALSE}
+raw_data <- read_csv("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/1_rawdata/ce_chemotaxis.csv") %>%
   mutate(CI = (Cue_N - Control_N) / Total)
 ```
 
-```{r long, exercise=TRUE}
-data_long <- raw_data %>%
+```{r long, exercise=TRUE, message=FALSE}
+long_data <- raw_data %>%
   select(Date, Strain, Cue, Control, Notes, everything()) %>%
   pivot_longer(Cue_N:CI, names_to = "Measurement", values_to = "Value") %>%
   glimpse()
 ```
 
-We first had to order the data in a tidier fashion by ordering all the metadata (the date, strain, cue, control, and notes) before the actual observational data. Then we made the data long. The `pivot_longer()` function included a number of arguments. First, we told it which variables to convert to long format, in this case all the columns from `Cue_N` to `CI`, because each of these variables contain the same data type (a number) and a single observation. Second, we told it to move the column names to a new variable called `Measurement`, and we told it to move all the observations below the column names to a new variable called `Value`. The `pivot_longer()` function will take every observation in the `data.frame`, move it to its own individual row, copy in the metadata that we told it not to pivot, and add a new variable next to it that corresponds to the column it came from. (Yes, this is confusing, it might take some staring at the before and after `tibbles` to figure out exactly what's going on.) The resulting `tibble` has 7 columns/variables - `Date`, `Strain`, `Cue`, `Control`, `Notes`, `Measurement`, and `Value` - in long format. Each row contains a single observation - the total number of N2 worms on one plate from 2018-12-17, for instance - and each column contains values of the same class - `Date` and `Count` contain numbers (the "double" class, to be specific), and the others contains character classes (i.e. words). This is the sort of format that works well with downstream analysis and plotting. See [this](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html) reference for more information on tidy data.
+We first had to order the data in a tidier fashion by putting all the metadata (the date, strain, cue, control, and notes) before the actual observational data; the `select()` function did this for us. Then we made the data long. The `pivot_longer()` function included a number of arguments. First, we told it which variables to convert to long format, in this case all the columns from `Cue_N` to `CI`, because each of these variables contain the same data type (a number) and a single observation. Second, we told it to move the column names to a new variable called `Measurement`, and we told it to move all the observations below the column names to a new variable called `Value`. The `pivot_longer()` function will take every observation in the `data.frame`, move it to its own individual row, copy in the metadata that we told it not to pivot, and add a new variable next to it that corresponds to the column it came from. (Yes, this is confusing, it might take some staring at the before and after `tibbles` to figure out exactly what's going on.) The resulting `tibble` has 7 columns/variables - `Date`, `Strain`, `Cue`, `Control`, `Notes`, `Measurement`, and `Value` - in long format. Each row contains a single observation - the total number of N2 worms on one plate from 2018-12-17, for instance - and each column contains values of the same class - `Date` and `Count` contain numbers (the "double" class, to be specific), and the others contains character classes (i.e. words). This is the sort of format that works well with downstream analysis and plotting. See [this](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html) reference for more information on tidy data. Below you'll find the before/after `tibbles` - `raw_data` and `long_data`. Can you see the difference?
 
-Before we move on to analysis, I want to say a bit here about object naming. So far, we have two objects - `raw_data` and `data_long`. In a given project you may end up with hundreds of different objects, each with a unique name, and you will want to give names that still make sense a year from now when you open up your script for the first time in months, when you send the script to a collaborator, or when you publish the script with a corrresponding paper. You can imagine coming up with appropriate object names might become difficult. Here are a few hints that may help:
+Before:
+```{r message=FALSE}
+read_csv("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/1_rawdata/ce_chemotaxis.csv")
+```
+
+```{r long2-setup, message=FALSE}
+raw_data <- read_csv("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/1_rawdata/ce_chemotaxis.csv") %>%
+  mutate(CI = (Cue_N - Control_N) / Total)
+```
+
+After:
+```{r long2, message=FALSE}
+raw_data %>%
+  select(Date, Strain, Cue, Control, Notes, everything()) %>%
+  pivot_longer(Cue_N:CI, names_to = "Measurement", values_to = "Value")
+```
+
+Before we move on to analysis, I want to say a bit here about object naming. So far, we have two objects - `raw_data` and `long_data`. In a given project you may end up with hundreds of different objects, each with a unique name, and you will want to give names that still make sense a year from now when you open up your script for the first time in months, when you send the script to a collaborator, or when you publish the script with a corrresponding paper. You can imagine coming up with appropriate object names might become difficult. Here are a few hints that may help:
 
 1. Names should be as short as possible (i.e. `temp`, not `temporary`).
-2. At the same time, names should be as descriptive as possible. Almost all of my scripts start with `raw_data`, `data_long`, and `tidy_data`. I know exactly what each of these objects will contain even before starting to run the script.
+2. At the same time, names should be as descriptive as possible. Almost all of my scripts start with `raw_data`, `long_data`, and `tidy_data`. I know exactly what each of these objects will contain even before starting to run the script.
 3. For technical reasons, avoid dot-script (`tidy.data`), but feel free to use snake-script (`tidy_data`) or camel-script `tidyData`.
 
 Now that we know the difference between wide and long data, take a look at your own data that you imported earlier. Is it wide or long? If it's wide, use `pivot_longer()` in the code block below. If it's already long, reassign it to a new object with `_long` included in the new object name. You will have to comment out the lines below that you don't want to run by adding `#` to the beginning.
 
-```{r test.long, exercise=TRUE}
-test_data <- read_csv("1_rawdata/...")
+```{r test_long, exercise=TRUE, message=FALSE}
+test_data <- read_csv("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/1_rawdata/...")
 
 # convert from wide to long data
-data_long <- test_data %>%
+long_data <- test_data %>%
   select(...) %>%
   pivot_longer(...)
 
 # or, simply re-assign the data to a more descriptive name
-data_long <- test_data
+long_data <- test_data
 ```
 
 Our data is now in a tidy, long format and ready to be analyzed! Before I begin analysis, I like to save my tidy data so that if I close this script but then want to come back later, I don't have to re-do all the tidying. In this test case, it wouldn't be a big deal to just rerun the import and tidying commands, but often we will run into large datasets were the import and tidying will take several minutes to complete. Because these two steps will not change later, even if I need to change the downstream analysis, I can save the tidy data in an intermedate file for later import.
 
 I could save the data as a CSV file, and that would be a good idea if I wanted to view the data as a spreadsheet or in a text editor. Usually that isn't the case, so R provides a binary storage format that takes up a miniscule amound of hard drive space and is very quickly imported into R - an RDS file. We'll save our tidied `tibble` using the code below:
 
-```{r save-setup, echo=FALSE}
-raw_data <- read_csv("1_rawdata/ce_chemotaxis.csv")
+```{r save-setup, echo=FALSE, message=FALSE}
+raw_data <- read_csv("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/1_rawdata/ce_chemotaxis.csv")
 
-data_long <- raw_data %>%
+long_data <- raw_data %>%
   mutate(CI = (Cue_N - Control_N) / Total) %>%
   select(Date, Strain, Cue, Control, Notes, everything()) %>%
-  pivot_longer(Cue_N:CI, names_to = "Measurement", values_to = "Value") 
+  pivot_longer(Cue_N:CI, names_to = "Measurement", values_to = "Value")
 ```
 
-```{r save, exercise=TRUE}
-tidy_data <- data_long
-saveRDS(tidy_data, "2_tidydata/tidy_data.rds")
+```{r save, exercise=TRUE, message=FALSE}
+tidy_data <- long_data
+saveRDS(tidy_data, "~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.rds")
 ```
 
-Notice that I first renamed the long data to `tidy_data`. In reality this was unnecessary; I could have saved `data_long` directly. However, with real life data, there might be more tidying that needs to happen after getting the data in long format, and only the completed tidy dataset should be saved as an RDS file.
+Notice that I first renamed the long data to `tidy_data`. In reality this was unnecessary; I could have saved `long_data` directly. However, with real life data, there might be more tidying that needs to happen after getting the data in long format, and only the completed tidy dataset should be saved as an RDS file.
 
 You'll also notice that the path to the folder used for saving has changed. In the import section, we read the CSV file from a folder called `1_rawdata`. Now that it's tidied, we're saving it to a folder called `2_tidydata`. This is a helpful convention that I urge you to use to help organize your data. I recommend having at least 4 separate folders within each distinct project:
 
@@ -151,20 +167,20 @@ This structure will help organize the analysis from start to finish, and it will
 
 Save your own tidied data with the code block below:
 
-```{r test.save, exercise=TRUE}
-test_data <- read_csv("1_rawdata/...")
+```{r test_save, exercise=TRUE}
+test_data <- read_csv("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/1_rawdata/...")
 
 # convert from wide to long data
-data_long <- test_data %>%
+long_data <- test_data %>%
   select(...) %>%
   pivot_longer(...)
 
 # or, simply re-assign the data to a more descriptive name
-data_long <- test_data
+long_data <- test_data
 
-tidy_data <- data_long
+tidy_data <- long_data
 
-saveRDS(tidy_data, "2_tidydata/...")
+saveRDS(tidy_data, "~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/...")
 ```
 
 ### Data Analysis
@@ -174,7 +190,7 @@ The next step is data analysis, which includes all of the manipulations required
 Let's get back to my chemotaxis dataset. When I was first running these experiments, I was using 6 cm NGM plates. I later discovered that this was **not** the correct plate size or agar formulation, so I started using 10 cm plates with chemotaxis agar. Instead of tossing out all the older data entirely, I kept it in the same CSV and encoded the `Notes` variable to include these differences. In the downstream analysis, we only want to analyze observations that came from a 10 cm plate, and we can do that with `dpylr`'s `filter()` function. See below:
 
 ```{r filter-setup, echo=FALSE}
-tidy_data <- readRDS("2_tidydata/tidy_data.RDS")
+tidy_data <- readRDS("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.RDS")
 ```
 
 ```{r filter, exercise=TRUE}
@@ -184,11 +200,11 @@ data_filt <- filter(tidy_data, Notes == "10 cm CTX") %>%
 
 Check the output. You'll notice the same variables remain, but there are fewer observations, only those that satisfy the filter that we setup. Go back to the `dplyr` cheatsheet that I provided earlier. You'll see our `filter()` function in the Subset Observations section. In the lower Logic in R table you'll find a number of different logical tests that `filter()` can use. In our case, we used `==` to only choose `Notes` observations that were equal to "10 cm CTX". If you look closely, there is an additional way to use the `filter()` function and achieve the same output that we achieved above. Use the code block below to try to find one of these `filter()` commands (replace `...` with your code).
 
-```{r filter.test-setup, echo=FALSE}
-tidy_data <- readRDS("2_tidydata/tidy_data.RDS")
+```{r filter_test-setup, echo=FALSE}
+tidy_data <- readRDS("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.RDS")
 ```
 
-```{r filter.test, exercise=TRUE}
+```{r filter_test, exercise=TRUE}
 temp_data_filt <- filter(tidy_data, ...) %>%
   glimpse()
 ```
@@ -198,7 +214,7 @@ If your filtered `tibble` has 450 observations, then you've found the correct al
 Now that we have a filtered dataset, we want to take a quick look at the mean CI for each strain and test cue. To do this, we first group the tidied data into the groups that we want to compare, then we summarize it into a new `tibble` containing our summary statistics. See below:
 
 ```{r summary-setup, echo=FALSE}
-tidy_data <- readRDS("2_tidydata/tidy_data.RDS")
+tidy_data <- readRDS("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.RDS")
 
 data_filt <- filter(tidy_data, Notes == "10 cm CTX")
 ```
@@ -214,7 +230,7 @@ As stated above, we first used the `group_by()` function to group our filtered d
 In reality, we probably aren't interested in the "Cue_N", "Control_N", "Outside", and "Total", because we'll never actually plot this data. We're only interested in "CI". Use the code block below and one of the functions we learned earlier to create a new summary `tibble` that only contains observations of "CI".
 
 ```{r ci-setup, echo=FALSE}
-tidy_data <- readRDS("2_tidydata/tidy_data.RDS")
+tidy_data <- readRDS("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.RDS")
 
 data_filt <- filter(tidy_data, Notes == "10 cm CTX")
 ```
@@ -231,7 +247,7 @@ If you did it correctly, `ci_summ` will have 6 observations and 6 variables.
 In this summary, we did not group by the experiment date, so  variation that we see through the standard deviation and standard error of the mean is a measure of biological variation across all the experiments that I ran. We might also be interested in the technical variation between individual experiments (this data was collated from 3 independent biological replicates for each cue, and each biological replicate included 5 technical replicates per strain.) To get a measure of technical variation, you will have to change the grouping strategy. Use the code block below to get this summary data.
 
 ```{r tech-setup, echo=FALSE}
-tidy_data <- readRDS("2_tidydata/tidy_data.RDS")
+tidy_data <- readRDS("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.RDS")
 
 data_filt <- filter(tidy_data, Notes == "10 cm CTX")
 ```
@@ -252,7 +268,7 @@ We now have a measure of variation and possible batch effects, which is caused b
 A plot is initialized with the `ggplot()` function, and we use arguments in the function to tell it about what data to plot and the aesthetics of the plot (for instance, which variables should be plotted on the x and y axis). After initialization, we can add `geom` layers with the `+` operator. This allows us to very quickly cycle through a number of different plotting stratgies by simply adjusting the type of layer that we add. Below is a demonstration.
 
 ```{r plot-setup, echo=FALSE}
-tidy_data <- readRDS("2_tidydata/tidy_data.RDS")
+tidy_data <- readRDS("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.RDS")
 
 data_filt <- filter(tidy_data, Notes == "10 cm CTX")
 
@@ -270,7 +286,7 @@ tech_plot
 We told `ggplot()` that we wanted to plot the `tech_summ` data, and that the x-axis should include the different strains while the y-axis should include the means (in this case the mean CI). `ggplot()` is able to intuit the order of the axes and the plotting range, and it then plots points with `geom_point()`. If you examine the resulting plot, you may see a few issues. First, N2 has twice as many points as the others. If you look back at `tidy_data`, you'll remember that N2 was used as a positive control for two sets of experiments, one using isoamyl alcohol as a cue, and another using diacetyl as a cue. This means it really isn't appropriate to plot all of the same data on the same plot, so we'll have to separate those datasets in some way. The scond issues is that it looks like both CX10 and ZAM14 only have 2 points plotted, but the data in `tech_summary` has 3 CI observations for both of these strains. If you look closely at the data, you'll see that for each of these strains, two of the observations are very near each other, which suggests that maybe in the plot these points are overlapping and obscurring each other. We'll deal with both of these issues below.
 
 ```{r plot2-setup, echo=FALSE}
-tidy_data <- readRDS("2_tidydata/tidy_data.RDS")
+tidy_data <- readRDS("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.RDS")
 
 data_filt <- filter(tidy_data, Notes == "10 cm CTX")
 
@@ -293,7 +309,7 @@ For this plot, we removed the `geom_point()` layer and instead added a `geom_jit
 A problem still remains with this plot, though. You can see that even though all the diacetyl replicates were performed on different days, the range of colors used makes it look like they were performed on the same day. Recall that in our original `tibble`, the Date variable was interpreted as a numeric class, which means `ggplot()` isn't seeing this variable as a true data, but as a number. To change the way the colors are assigned so that different days have more distinguishable colors, we need to give the Date variable a new class. We could go back to the original `tibble` and reassign it, or we can tell `ggplot()` to interpret the variable as a different class before plotting. We will do the latter below.
 
 ```{r plot3-setup, echo=FALSE}
-tidy_data <- readRDS("2_tidydata/tidy_data.RDS")
+tidy_data <- readRDS("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.RDS")
 
 data_filt <- filter(tidy_data, Notes == "10 cm CTX")
 
@@ -313,12 +329,12 @@ tech_plot
 
 The plot is now at a point where we can begin to assess the sources of variation. The experiment dates are now interpreted as factors, which can be thought of as a categorical variable with no inherent arrangment (as opposed to numeric variables which are continuous and arrangment from the least to the greatest).
 
-Let's now look at the variation. One thing that is immediately apparent is that the PR678 and ZAM14 mean CI's were much higher on 20190316 than the other two days, but that the N2 CI wasn't. It's hard to guess why this occurred, but it it is something to remember as we continue to plotting the actual observations. 
+Let's now look at the variation. One thing that is immediately apparent is that the PR678 and ZAM14 mean CI's were much higher on 20190316 than the other two days, but that the N2 CI wasn't. It's hard to guess why this occurred, but it it is something to remember as we continue to plotting the actual observations.
 
 This plot tells us that the data is trustworthy and doesn't include extreme outliers that will skew the remaining analysis and visualization. We can now feel comfortable plotting the original filtered dataset.
 
 ```{r plot4-setup, echo=FALSE}
-tidy_data <- readRDS("2_tidydata/tidy_data.RDS")
+tidy_data <- readRDS("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.RDS")
 
 data_filt <- filter(tidy_data, Notes == "10 cm CTX")
 ```
@@ -337,7 +353,7 @@ Remember, we're only interested in plotting the CI. We could have filtered `data
 As you can see, all the observations successfully plotted. However, there are again several problems that preclude drawing inferences from the visualization. First, the jittered points run between strains and it's not clear where one strain starts and the other begins. Second, the labels on the y-axis are pretty sparse. Third, the error that we calculated in the data analysis section isn't included at all. Finally, the y-axis label "Value" is meaningless to someone who hasn't looked at the data itself. Let's fix those problems.
 
 ```{r plot5-setup, echo=FALSE}
-tidy_data <- readRDS("2_tidydata/tidy_data.RDS")
+tidy_data <- readRDS("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.RDS")
 
 data_filt <- filter(tidy_data, Notes == "10 cm CTX")
 
@@ -368,7 +384,7 @@ We're nearly there! Instead of randomly jittered points we used a new function f
 There's one final thing to fix, and that is the order of the strains on the x-axis. Unfortunately, there is no good way to do that within the plotting command itself, and we'll have to go back to filtered `tibble`.
 
 ```{r plot6-setup, echo=FALSE}
-tidy_data <- readRDS("2_tidydata/tidy_data.RDS")
+tidy_data <- readRDS("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.RDS")
 
 data_filt <- filter(tidy_data, Notes == "10 cm CTX")
 
@@ -378,7 +394,7 @@ ci_summ <- group_by(data_filt, Strain, Cue, Measurement) %>%
 ```
 
 ```{r plot6, exercise=TRUE}
-data_filt %<>% mutate(Strain = factor(Strain, levels = c("N2", "CX10", "PR678", "ZAM13", "ZAM14")))
+data_filt <- mutate(data_filt, Strain = factor(Strain, levels = c("N2", "CX10", "PR678", "ZAM13", "ZAM14")))
 
 ci_plot <- ggplot(filter(data_filt, Measurement == "CI"), aes(x = Strain, y = Value)) +
   # geom_point() +
@@ -399,7 +415,7 @@ To reorder the `Strain` variable, we had to change it from a character class to 
 Congratulations! You have a nearly publication quality data visualization. At this point, there are several next steps. First, you can continue probing the data by adding new filters or changing some of the colors. Remember the possible batch effect we found in two strains? You could change the color aesthetic to get a more granular view of the technical variation. In fact, use the below code block to do that (again, replace the `...`).
 
 ```{r plot7-setup, echo=FALSE}
-tidy_data <- readRDS("2_tidydata/tidy_data.RDS")
+tidy_data <- readRDS("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.RDS")
 
 data_filt <- filter(tidy_data, Notes == "10 cm CTX")
 
@@ -409,7 +425,7 @@ ci_summ <- group_by(data_filt, Strain, Cue, Measurement) %>%
 ```
 
 ```{r plot7, exercise=TRUE}
-data_filt %<>% mutate(Strain = factor(Strain, levels = c("N2", "CX10", "PR678", "ZAM13", "ZAM14")))
+data_filt <- mutate(data_filt, Strain = factor(Strain, levels = c("N2", "CX10", "PR678", "ZAM13", "ZAM14")))
 
 ci_plot <- ggplot(filter(data_filt, Measurement == "CI"), aes(x = Strain, y = Value)) +
   # geom_point() +
@@ -432,7 +448,7 @@ The last two tasks are what it will take to move your plots from being merely "i
 Now that you know a bit about plotting with `ggplot2`, you'll begin noticing "ggplots" **everywhere**. One goal of the plots coming out of the Zamanian Lab is that we don't want them to look "stock ggplot." One easy way to do that is by using one of the complete `ggplot2` [themes](https://ggplot2.tidyverse.org/reference/ggtheme.html). Here are a few examples:
 
 ```{r theme-setup, echo=FALSE}
-tidy_data <- readRDS("2_tidydata/tidy_data.RDS")
+tidy_data <- readRDS("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.RDS")
 
 data_filt <- filter(tidy_data, Notes == "10 cm CTX")
 
@@ -440,7 +456,7 @@ ci_summ <- group_by(data_filt, Strain, Cue, Measurement) %>%
   filter(Measurement == "CI") %>%
   summarize(Mean = mean(Value), SD = sd(Value), SEM = sd(Value) / sqrt(length(Value)))
 
-data_filt %<>% mutate(Strain = factor(Strain, levels = c("N2", "CX10", "PR678", "ZAM13", "ZAM14")))
+data_filt <- mutate(data_filt, Strain = factor(Strain, levels = c("N2", "CX10", "PR678", "ZAM13", "ZAM14")))
 
 ci_plot <- ggplot(filter(data_filt, Measurement == "CI"), aes(x = Strain, y = Value)) +
   # geom_point() +
@@ -473,8 +489,8 @@ Notice first that adding the complete theme removed the theme customizations tha
 
 Complete themes are important, and they're often a good starting point, but any good plot will need to be specifically customized for the eventual place of publication. In the below code I incorporate a number of new thematic elements that can act as a starting point for your own theming. All of the theme customizations can be found at `?theme()` or [here](https://ggplot2.tidyverse.org/reference/theme.html).
 
-```{r theme2-setup, echo=FALSE}
-tidy_data <- readRDS("2_tidydata/tidy_data.RDS")
+```{r theme2-setup, echo=FALSE, message=FALSE}
+tidy_data <- readRDS("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.RDS")
 
 data_filt <- filter(tidy_data, Notes == "10 cm CTX")
 
@@ -482,7 +498,7 @@ ci_summ <- group_by(data_filt, Strain, Cue, Measurement) %>%
   filter(Measurement == "CI") %>%
   summarize(Mean = mean(Value), SD = sd(Value), SEM = sd(Value) / sqrt(length(Value)))
 
-data_filt %<>% mutate(Strain = factor(Strain, levels = c("N2", "CX10", "PR678", "ZAM13", "ZAM14")))
+data_filt <- mutate(data_filt, Strain = factor(Strain, levels = c("N2", "CX10", "PR678", "ZAM13", "ZAM14")))
 
 ci_plot <- ggplot(filter(data_filt, Measurement == "CI"), aes(x = Strain, y = Value)) +
   # geom_point() +
@@ -497,7 +513,7 @@ ci_plot <- ggplot(filter(data_filt, Measurement == "CI"), aes(x = Strain, y = Va
   NULL
 ```
 
-```{r theme2, exercise=TRUE}
+```{r theme2, exercise=TRUE, message=FALSE}
 ci_plot <- ci_plot +
   geom_hline(aes(yintercept = 0), linetype = "dashed", colour = "grey37", size = 0.5) +
   scale_color_viridis_d() +
@@ -524,8 +540,8 @@ You can see that I first added a new layer and changed the color scale. Then I a
 
 After completing the theme, we need to add symbols denoting statistical comparisons, and then we'll be finished. Fortunately, it will only take a few additional lines of code to do so.
 
-```{r stats-setup, echo=FALSE}
-tidy_data <- readRDS("2_tidydata/tidy_data.RDS")
+```{r stats-setup, echo=FALSE, message=FALSE}
+tidy_data <- readRDS("~/Box/ZamanianLab/LabMembers/Nic/R_workshop/2_tidydata/tidy_data.RDS")
 
 data_filt <- filter(tidy_data, Notes == "10 cm CTX")
 
@@ -533,7 +549,7 @@ ci_summ <- group_by(data_filt, Strain, Cue, Measurement) %>%
   filter(Measurement == "CI") %>%
   summarize(Mean = mean(Value), SD = sd(Value), SEM = sd(Value) / sqrt(length(Value)))
 
-data_filt %<>% mutate(Strain = factor(Strain, levels = c("N2", "CX10", "PR678", "ZAM13", "ZAM14")))
+data_filt <- mutate(data_filt, Strain = factor(Strain, levels = c("N2", "CX10", "PR678", "ZAM13", "ZAM14")))
 
 ci_plot <- ggplot(filter(data_filt, Measurement == "CI"), aes(x = Strain, y = Value)) +
   # geom_point() +
@@ -566,7 +582,7 @@ ci_plot <- ci_plot +
   NULL
 ```
 
-```{r stats, exercise=TRUE}
+```{r stats, exercise=TRUE, message=FALSE}
 library(ggpubr)
 
 diacetyl.comparisons <- list(c("N2", "CX10"), c("N2", "ZAM13"), c("CX10", "ZAM13"))
