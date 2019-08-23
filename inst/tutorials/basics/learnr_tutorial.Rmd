@@ -16,6 +16,7 @@ library(learnr)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
+library(readr)
 ```
 
 ## Introduction
@@ -34,6 +35,7 @@ First things first...import the data. Actually, that's the second thing we have 
 library(tidyr)
 library(dplyr)
 library(ggplot2)
+library(readr)
 ```
 
 For the purposes of this tutorial, we will be loading packages as needed, and I will point out what the package is often used for and what the new function that we're using does. When you begin writing your own R scripts, it's good practice to load all of the packages you'll need at the top of the document, before you start any analysis. If you get halfway through the analysis and realize you need another package, add it to the top.
