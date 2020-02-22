@@ -1,13 +1,13 @@
-# ZamanianLabTutorials
+# ZamanianLabREnvironment
 
 ## Usage
 
 ### Installation
-devtools::install_github("wheelern/ZamanaianLabTutorials")
+devtools::install_github("wheelern/ZamanianLabREnvironment")
 
 ### Run a tutorial
-library("ZamanianLabTutorials")
-learnr::run_tutorial("basics", "ZamanianLabTutorials")
+library("ZamanianLabREnvironment")
+learnr::run_tutorial("basics", "ZamanianLabREnvironment")
 
 ### Tutorial List
 basics - a fly through of **everything**, from data import to data visualization.
