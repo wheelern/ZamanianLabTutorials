@@ -1,6 +1,6 @@
 Package: ZamanianLabREnvironment
 Type: Package
-Title: An easy way to deploy a unifired R environment and training materials for Zamanian Lab members.
+Title: An easy way to deploy a unified R environment and training materials for Zamanian Lab members.
 Version: 0.1.0
 Author: Nic Wheeler
 Maintainer: Nic Wheeeler <nicolas.j.wheeler@gmail.com>
