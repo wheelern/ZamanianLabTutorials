@@ -21,7 +21,7 @@ theme_zlab <- function(base_size = 16, base_family = "helvetica") {
       axis.line = ggplot2::element_line(size = 0.75, colour = "black"),
 
       # facets
-      strip.text.x = ggplot2::element_text(face = "bold", size = 12),
+      strip.text = ggplot2::element_text(face = "bold", size = 12),
 
       # panels
       panel.grid.minor = ggplot2::element_blank(),
@@ -56,14 +56,14 @@ transgenes_pal <- function() {
 #' @export
 #' @rdname scale_transgenes
 #' @example inst/examples/ex-theme_zlab.R
-scale_colour_transgenes <- function(...) {
-  ggplot2::discrete_scale("colour", "transgenes", transgenes_pal(), ...)
+scale_color_transgenes <- function(...) {
+  ggplot2::discrete_scale("color", "transgenes", transgenes_pal(), ...)
 }
 
 
 #' @rdname scale_transgenes
 #' @export
-scale_colour_transgenes <- scale_colour_transgenes
+scale_color_transgenes <- scale_color_transgenes
 
 #' @rdname scale_transgenes
 #' @export
