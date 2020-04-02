@@ -63,7 +63,7 @@ scale_color_transgenes <- function(...) {
 
 #' @rdname scale_transgenes
 #' @export
-scale_color_transgenes <- scale_color_transgenes
+scale_colour_transgenes <- scale_color_transgenes
 
 #' @rdname scale_transgenes
 #' @export
