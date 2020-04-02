@@ -2,12 +2,13 @@
 % Please edit documentation in R/theme_zlab.R
 \name{scale_color_transgenes}
 \alias{scale_color_transgenes}
+\alias{scale_colour_transgenes}
 \alias{scale_fill_transgenes}
 \title{C. elegans tissue-specific transgenesis color scales}
 \usage{
 scale_color_transgenes(...)
 
-scale_color_transgenes(...)
+scale_colour_transgenes(...)
 
 scale_fill_transgenes(...)
 }

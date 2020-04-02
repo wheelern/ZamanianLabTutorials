@@ -1,9 +1,11 @@
 # ZamanianLabREnvironment
 
-### Installation
+## Installation
 `devtools::install_github("wheelern/ZamanianLabREnvironment")`
 
-### Using the theme
+## Usage
+
+### Theme
     
     library(ggplot2)
     library(dplyr)
@@ -35,8 +37,8 @@
         strip.text.y = element_text(size = 8)
       ) +
       NULL
-      
-![Aversion Plot](/img/aversion.png)
+
+<img src="https://github.com/wheelern/ZamanianLabREnvironment/blob/master/inst/img/aversion.png" width=300 align=left>
 
 ### Run a tutorial
 `library("ZamanianLabREnvironment")`  

@@ -1,7 +1,7 @@
 #' Example assay data
 #'
 #' Data for a few ring-based aversion experiments that Kendra/Abdi ran
-#' with transgenic orms
+#' with transgenic worms
 #'
 #' @format A data frame with 231 rows and 4 variables:
 #' \describe{
