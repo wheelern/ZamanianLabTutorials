@@ -38,7 +38,7 @@
       ) +
       NULL
 
-<img src="https://github.com/wheelern/ZamanianLabREnvironment/blob/master/inst/img/aversion.png" width=300 align=left>  
+<img src="https://github.com/wheelern/ZamanianLabREnvironment/blob/master/inst/img/aversion.png" width=300 align=left><br />
 
 
 ### Run a tutorial
