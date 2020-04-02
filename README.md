@@ -38,7 +38,11 @@
       ) +
       NULL
 
+<<<<<<< HEAD
 <!-- <img src="https://github.com/wheelern/ZamanianLabREnvironment/blob/master/inst/img/aversion.png" width=300 align=left><br /> -->
+=======
+<img src="https://github.com/wheelern/ZamanianLabREnvironment/blob/master/inst/img/aversion.png" width=300 align=left><br />
+>>>>>>> 0b2c66697e01c194d759be4532a8a0ca5772cfe6
 
 <img src="inst/img/aversion.png" width=300><br /><br />
 
