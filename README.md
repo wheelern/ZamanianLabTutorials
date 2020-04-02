@@ -6,17 +6,17 @@
 ## Usage
 
 ### Theme
-    
+
     library(ggplot2)
     library(dplyr)
     library(shades)
     library("ZamanianLabREnvironment")
-    
+
     load("data/aversion_data.rda")
-    
+
     rba <- ggplot(dplyr::filter(aversion_data, compound != "Glycerol"), aes(x = worm_strain, y = attempts)) +
       geom_hline(yintercept = 0, linetype = 2, size = 0.25, color = "grey") +
-      geom_violin(aes(fill = worm_strain, color = worm_strain), 
+      geom_violin(aes(fill = worm_strain, color = worm_strain),
                   alpha = 0.6, size = 0.25, draw_quantiles = TRUE, scale = "width") +
       stat_summary(fun.data = "mean_cl_normal", color = "black", alpha = 0.9, size = 0.2) +
       facet_grid(rows = vars(compound), scales = "free") +
@@ -38,8 +38,9 @@
       ) +
       NULL
 
-<img src="https://github.com/wheelern/ZamanianLabREnvironment/blob/master/inst/img/aversion.png" width=300 align=left>  
+<!-- <img src="https://github.com/wheelern/ZamanianLabREnvironment/blob/master/inst/img/aversion.png" width=300 align=left><br /> -->
 
+<img src="inst/img/aversion.png" width=300><br /><br />
 
 ### Run a tutorial
 `library("ZamanianLabREnvironment")`  
