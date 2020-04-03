@@ -5,12 +5,12 @@ Version: 0.1.0
 Author: Nic Wheeler
 Maintainer: Nic Wheeeler <nicolas.j.wheeler@gmail.com>
 Description: This package is very simple. Installation will install the preferred versions of core packages.
-    The meat can be found in `inst/tutorials`, which contains a variety of tutorials I have developed to 
+    The meat can be found in `inst/tutorials`, which contains a variety of tutorials I have developed to
     begin teaching R to new lab members who have little to no R experience.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: 
+Imports:
     dplyr (>= 0.8.4),
     tidyr (>= 1.0.2),
     ggplot2 (>= 3.2.1),
@@ -35,9 +35,10 @@ Imports:
     rmarkdown (>= 2.1),
     shiny (>= 1.4.0),
     ggthemes (>= 4.2.0),
-    scales (>= 1.1.0)
+    scales (>= 1.1.0),
+    shades (>= 1.4.0)
 RoxygenNote: 7.1.0
-Suggests: 
+Suggests:
     spelling,
     testthat (>= 2.1.0)
 Language: en-US

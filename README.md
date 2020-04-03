@@ -12,7 +12,7 @@
     library(shades)
     library("ZamanianLabREnvironment")
 
-    load("data/aversion_data.rda")
+    data(aversion_data)
 
     rba <- ggplot(dplyr::filter(aversion_data, compound != "Glycerol"), aes(x = worm_strain, y = attempts)) +
       geom_hline(yintercept = 0, linetype = 2, size = 0.25, color = "grey") +
