@@ -33,6 +33,55 @@ theme_zlab <- function(base_size = 16, base_family = "helvetica") {
     ))
 }
 
+#' Nic's theme
+#'
+#' @param base_size An integer.
+#' @param base_family An integer.
+#'
+#' @return
+#' @export
+#'
+#' @example inst/examples/ex-theme_nw.R
+
+theme_nw <- function(base_size = 16, base_family = "helvetica") {
+  ggthemes::theme_foundation(base_size = base_size, base_family = base_family) +
+    ggplot2::theme_minimal(base_size = 16, base_family = "Helvetica") +
+    ggplot2::theme(
+
+      # panels
+      panel.grid.minor = element_blank(),
+      panel.grid.major = element_line(size = 0.5),
+
+      # axes
+      axis.text.x = ggtext::element_markdown(size = 8, angle = 45, vjust = 1, hjust = 1),
+      axis.text.y = ggtext::element_markdown(size = 8),
+      axis.title.x = ggtext::element_markdown(face = "bold", size = 10),
+      axis.title.y = ggtext::element_markdown(face = "bold", angle = 90, size = 10),
+
+      # facets
+      strip.text.x = ggtext::element_markdown(size = 8),
+      strip.text.y = ggtext::element_markdown(size = 8),
+      axis.line = element_line(size = 0.5, color = "black"),
+      axis.ticks = element_line(size = 0.5, color = 'black'),
+
+      # legend
+      legend.title = ggtext::element_markdown(face = "bold", size = 10),
+      legend.text = ggtext::element_markdown(size = 8),
+      legend.position = "right"
+  )
+}
+
+#' Function to quickly remove the legend
+#'
+#'
+#' @return
+#' @export
+#'
+remove_legend <- function() {
+  theme(legend.position = 'none')
+}
+
+
 #' Color palette for C. elegans tissue-specific transgenesis
 #'
 #'
