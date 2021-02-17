@@ -1,7 +1,7 @@
-# ZamanianLabREnvironment
+# ZamanianLabThemes
 
 ## Installation
-`devtools::install_github("zamanianlab/ZamanianLabREnvironment")`
+`devtools::install_github("zamanianlab/ZamanianLabThemes")`
 
 ## Usage
 
@@ -10,7 +10,7 @@
     library(ggplot2)
     library(dplyr)
     library(shades)
-    library("ZamanianLabREnvironment")
+    library("ZamanianLabThemes")
 
     data(aversion_data)
 

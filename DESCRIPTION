@@ -1,10 +1,10 @@
-Package: ZamanianLabREnvironment
+Package: ZamanianLabThemes
 Type: Package
-Title: An easy way to deploy a unified R environment and training materials for Zamanian Lab members
+Title: Plot themes for Zamanian Lab members
 Version: 0.1.0
 Author: Nic Wheeler
 Maintainer: Nic Wheeeler <nicolas.j.wheeler@gmail.com>
-Description: This package is very simple. Installation will install the preferred versions of core packages.
+Description: A simple package with a few personal themes.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
