@@ -21,7 +21,7 @@ A data frame with 231 rows and 4 variables:
 aversion_data
 }
 \description{
-Data for a few ring-based aversion experiments that Kendra/Abdi ran
-with transgenic orms
+Data for a few ring-based aversion experiments that Kendra ran
+with transgenic worms
 }
 \keyword{datasets}
