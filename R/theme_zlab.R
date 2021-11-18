@@ -93,8 +93,8 @@ theme_nw2 <- function(base_size = 16, base_family = "helvetica") {
       # axes
       axis.text.x = ggtext::element_markdown(face = 'plain', size = 8, angle = 45, vjust = 1, hjust = 1),
       axis.text.y = ggtext::element_markdown(face = 'plain', size = 8),
-      axis.title.x = ggtext::element_markdown(face = "bold", size = 10),
-      axis.title.y = ggtext::element_markdown(face = "bold", angle = 90, size = 10),
+      axis.title.x = ggtext::element_markdown(face = "plain", size = 10),
+      axis.title.y = ggtext::element_markdown(face = "plain", angle = 90, size = 10),
 
       # facets
       strip.text.x = ggtext::element_markdown(size = 10),
